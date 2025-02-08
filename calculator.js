@@ -106,7 +106,7 @@ function calculateSimultaneousAttacks() {
     // resultsHTML += `<p class="alert alert-success">Any Attack Successful: ${(anySuccessCount / simulations * 100).toFixed(2)}%</p>`;
 
     // Display individual success rates and add toggle buttons for remaining units
-    resultsHTML += '<p class="alert alert-success"><strong>Individual Attack Success Rates:</strong></p>';
+    // resultsHTML += '<p class="alert alert-success"><strong>Individual Attack Success Rates:</strong></p>';
     for (let i = 0; i < numberOfAttacks; i++) {
         let successRate = (successOutcomes[i].success / simulations * 100).toFixed(2);
         resultsHTML += `<p class="alert alert-info">Attack ${i+1} Success Rate: ${successRate}%</p>`;
