@@ -30,8 +30,8 @@
                 class="form-control"
                 id="numberOfAttacks"
                 min="1"
-                max="5"
-                value="2"
+                max="10"
+                value="1"
                 step="1"
                 oninput="updateAttackFields()"
               />
@@ -56,7 +56,7 @@
         <form>
             <div class="mb-3">
                 <label for="totalCards" class="form-label">Total Number of Cards:</label>
-                <input type="number" class="form-control" id="totalCards" min="0" value="52">
+                <input type="number" class="form-control" id="totalCards" min="1" value="43">
             </div>
             <div class="mb-3">
                 <label for="wildCards" class="form-label">Number of Wild Cards:</label>
@@ -71,7 +71,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label>Your Cards:</label>
+                <label class="mb-3">Your Cards:</label>
                 <div class="row">
                     <div class="col">
                         <label for="playerSet0" class="form-label">Set 1:</label>

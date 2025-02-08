@@ -79,7 +79,7 @@ function calculateCardProbability() {
 
     if (totalCards < wildCards || totalCards < 0 || wildCards < 0 || ![3, 4, 5].includes(opponentCards) || 
         playerCards.reduce((sum, count) => sum + count, 0) > totalCards) {
-        document.getElementById('cardResult').innerText = 'Please enter valid numbers. Check total cards and opponent/player card counts.';
+        alert('Please enter valid numbers. Check total cards and opponent/player card counts.');
         return;
     }
 

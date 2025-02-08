@@ -27,6 +27,7 @@
 /* Style for attacker and defender rows */
 .attacker-row {
   background-color: #e9ecef; /* Light grey for attackers */
+  padding: 1rem;
 }
 .defender-row {
   background-color: #f8f9fa; /* Slightly lighter grey for defenders */

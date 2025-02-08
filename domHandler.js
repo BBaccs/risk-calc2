@@ -5,12 +5,12 @@ function updateAttackFields() {
         fieldsHTML += `
             <div class="mb-3 attacker-row">
                 <label for="attackingUnits${i}" class="form-label">Total Attacking Units for Attack ${i}:</label>
-                <input type="number" class="form-control" id="attackingUnits${i}" min="0" value="100" step="1">
+                <input type="number" class="form-control" id="attackingUnits${i}" min="1" value="0" step="1">
                 <button type="button" class="btn btn-secondary" onclick="resetAttack(${i})">Reset Attack ${i}</button>
             </div>
             <div class="mb-3 defender-row">
-                <label for="territories${i}" class="form-label">Defending Units in Each Territory for Attack ${i} (comma-separated):</label>
-                <input type="text" class="form-control" id="territories${i}" value="60,20,3,1,1">
+                <label for="territories${i}" class="form-label">Defending Units in Each Territory for Attack ${i} (comma-separated: 6,1,3):</label>
+                <input type="text" class="form-control" id="territories${i}" value="0">
             </div>
         `;
     }
