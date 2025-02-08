@@ -1,0 +1,47 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+.bg-primary {
+  background-color: #dc3545 !important; /* Bootstrap's default red */
+}
+.btn-primary {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+.btn-primary:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+.alert-success {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+.alert-info {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+/* Style for attacker and defender rows */
+.attacker-row {
+  background-color: #e9ecef; /* Light grey for attackers */
+}
+.defender-row {
+  background-color: #f8f9fa; /* Slightly lighter grey for defenders */
+}
+/* Add space between toggle buttons */
+.toggle-button {
+  margin-right: 10px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

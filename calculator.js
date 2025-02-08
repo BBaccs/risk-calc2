@@ -1,69 +1,6 @@
 function calculateRiskChainWinPercentage(totalAttackers, territories) {
     let remainingAttackers = totalAttackers;
     
-    // Simulate attack on each territory
-    for (let i = 0; i < territories.length; i++) {
-        let defenders = territories[i];
-        let attackers = remainingAttackers;
-
-        // Simulate battle until one side is out of units or territory is taken
-        while (attackers > 0 && defenders > 0) {
-            let result = simulateBattleRound(attackers, defenders);
-            attackers -= result.attackerLosses;
-            defenders -= result.defenderLosses;
-
-            // If territory is taken, check if there are attackers left
-            if (defenders <= 0) {
-                remainingAttackers = attackers - 1; // Leave one unit behind
-                break;
-            }
-
-            // If attackers run out, simulation ends here
-            if (attackers <= 0) {
-                return { success: false, remaining: 0 };
-            }
-        }
-
-        // If we've run out of attackers before capturing all territories
-        if (attackers <= 0) {
-            return { success: false, remaining: 0 };
-        }
-    }
-
-    return { success: true, remaining: remainingAttackers };
-}
-
-function simulateBattleRound(attackers, defenders) {
-    let attackerLosses = 0;
-    let defenderLosses = 0;
-    let attackRolls = [];
-    let defendRolls = [];
-
-    for (let i = 0; i < Math.min(attackers, 3); i++) {
-        attackRolls.push(Math.floor(Math.random() * 6) + 1);
-    }
-    for (let i = 0; i < Math.min(defenders, 2); i++) {
-        defendRolls.push(Math.floor(Math.random() * 6) + 1);
-    }
-
-    attackRolls.sort((a, b) => b - a);
-    defendRolls.sort((a, b) => b - a);
-
-    let compareCount = Math.min(attackRolls.length, defendRolls.length);
-    for (let i = 0; i < compareCount; i++) {
-        if (attackRolls[i] > defendRolls[i]) {
-            defenderLosses++;
-        } else {
-            attackerLosses++;
-        }
-    }
-
-    return { attackerLosses, defenderLosses };
-}
-
-function calculateRiskChainWinPercentage(totalAttackers, territories) {
-    let remainingAttackers = totalAttackers;
-    
     for (let i = 0; i < territories.length; i++) {
         let defenders = territories[i];
         let attackers = remainingAttackers;
@@ -120,53 +57,77 @@ function simulateBattleRound(attackers, defenders) {
 }
 
 function calculateSimultaneousAttacks() {
-    const totalAttackers1 = parseInt(document.getElementById('attackingUnits1').value);
-    const territories1 = document.getElementById('territories1').value.split(',').map(Number);
-    const totalAttackers2 = parseInt(document.getElementById('attackingUnits2').value);
-    const territories2 = document.getElementById('territories2').value.split(',').map(Number);
+    const numberOfAttacks = parseInt(document.getElementById('numberOfAttacks').value);
+    let attacks = [];
+    let resultsHTML = '';
 
-    if (!territories1.every(num => !isNaN(num)) || !territories2.every(num => !isNaN(num))) {
-        document.getElementById('result').innerText = 'Please enter valid numbers for territories, separated by commas.';
+    // Collect data for each attack
+    for (let i = 1; i <= numberOfAttacks; i++) {
+        attacks.push({
+            attackers: parseInt(document.getElementById(`attackingUnits${i}`).value),
+            territories: document.getElementById(`territories${i}`).value.split(',').map(Number)
+        });
+    }
+
+    // Check if all inputs are valid
+    if (!attacks.every(attack => 
+        attack.territories.every(num => !isNaN(num)) && !isNaN(attack.attackers)
+    )) {
+        document.getElementById('result').innerText = 'Please enter valid numbers for all inputs.';
         return;
     }
 
     const simulations = 10000;
-    let bothSuccessCount = 0;
-    let eitherSuccessCount = 0;
-    let success1Only = 0;
-    let success2Only = 0;
-    let totalRemaining1 = 0;
-    let totalRemaining2 = 0;
+    let allSuccessCount = 0;
+    let anySuccessCount = 0;
+    let successOutcomes = new Array(numberOfAttacks).fill(0).map(() => ({ success: 0, remaining: [] }));
 
     for (let i = 0; i < simulations; i++) {
-        let result1 = calculateRiskChainWinPercentage(totalAttackers1, territories1);
-        let result2 = calculateRiskChainWinPercentage(totalAttackers2, territories2);
+        let allSuccess = true;
+        let anySuccess = false;
 
-        if (result1.success && result2.success) {
-            bothSuccessCount++;
-            totalRemaining1 += result1.remaining;
-            totalRemaining2 += result2.remaining;
+        for (let j = 0; j < numberOfAttacks; j++) {
+            let result = calculateRiskChainWinPercentage(attacks[j].attackers, attacks[j].territories);
+            if (result.success) {
+                successOutcomes[j].success++;
+                successOutcomes[j].remaining[result.remaining] = (successOutcomes[j].remaining[result.remaining] || 0) + 1;
+                anySuccess = true;
+            } else {
+                allSuccess = false;
+            }
         }
-        if (result1.success || result2.success) {
-            eitherSuccessCount++;
-        }
-        if (result1.success && !result2.success) success1Only++;
-        if (!result1.success && result2.success) success2Only++;
+
+        if (allSuccess) allSuccessCount++;
+        if (anySuccess) anySuccessCount++;
     }
 
-    const bothSuccessPercentage = (bothSuccessCount / simulations * 100).toFixed(2);
-    const eitherSuccessPercentage = (eitherSuccessCount / simulations * 100).toFixed(2);
-    const success1OnlyPercentage = (success1Only / simulations * 100).toFixed(2);
-    const success2OnlyPercentage = (success2Only / simulations * 100).toFixed(2);
-    const avgRemaining1 = (totalRemaining1 / bothSuccessCount || 0).toFixed(2);
-    const avgRemaining2 = (totalRemaining2 / bothSuccessCount || 0).toFixed(2);
+    // Display combined results
+    resultsHTML += `<p class="alert alert-success">All Attacks Successful: ${(allSuccessCount / simulations * 100).toFixed(2)}%</p>`;
+    resultsHTML += `<p class="alert alert-success">Any Attack Successful: ${(anySuccessCount / simulations * 100).toFixed(2)}%</p>`;
 
-    document.getElementById('result').innerHTML = `
-        <p class="alert alert-success">Both Attacks Successful: ${bothSuccessPercentage}%</p>
-        <p class="alert alert-success">Either Attack Successful: ${eitherSuccessPercentage}%</p>
-        <p class="alert alert-info">Only Attack 1 Successful: ${success1OnlyPercentage}%</p>
-        <p class="alert alert-info">Only Attack 2 Successful: ${success2OnlyPercentage}%</p>
-        <p class="alert alert-info">Average Units Remaining in Attack 1 if Both Successful: ${avgRemaining1}</p>
-        <p class="alert alert-info">Average Units Remaining in Attack 2 if Both Successful: ${avgRemaining2}</p>
-    `;
+    // Display individual success rates and add toggle buttons for remaining units
+    resultsHTML += '<p class="alert alert-success"><strong>Individual Attack Success Rates:</strong></p>';
+    for (let i = 0; i < numberOfAttacks; i++) {
+        let successRate = (successOutcomes[i].success / simulations * 100).toFixed(2);
+        resultsHTML += `<p class="alert alert-info">Attack ${i+1} Success Rate: ${successRate}%</p>`;
+
+        // Toggle button for stats
+        resultsHTML += `<button class="btn btn-secondary mb-2 toggle-button" onclick="toggleStats(${i})">Toggle Stats for Attack ${i+1}</button>`;
+        // Hidden stats div
+        resultsHTML += `<div class="alert alert-info" id="stats${i}" style="display: none;">
+            <p><strong>Attack ${i+1} Stats:</strong></p>
+            <p>Average Units Remaining if Successful: ${successOutcomes[i].success > 0 ? 
+                (successOutcomes[i].remaining.reduce((sum, count, index) => sum + index * count, 0) / successOutcomes[i].success).toFixed(2) : 'N/A'}</p>
+            <p>Most Common Units Remaining: ${successOutcomes[i].remaining.reduce((max, count, index) => 
+                count > (successOutcomes[i].remaining[max] || 0) ? index : max, 0)}</p>
+        </div>`;
+    }
+
+    document.getElementById('result').innerHTML = resultsHTML;
 }
+
+// This function needs to be accessible from the global scope for the onclick event to work
+window.toggleStats = function(index) {
+    let statsElement = document.getElementById(`stats${index}`);
+    statsElement.style.display = statsElement.style.display === 'none' ? 'block' : 'none';
+};
