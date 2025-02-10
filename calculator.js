@@ -65,13 +65,14 @@ function calculateSimultaneousAttacks() {
     for (let i = 1; i <= numberOfAttacks; i++) {
         attacks.push({
             attackers: parseInt(document.getElementById(`attackingUnits${i}`).value),
-            territories: document.getElementById(`territories${i}`).value.split(',').map(Number)
+            totalDefenders: parseInt(document.getElementById(`totalDefenders${i}`).value),
+            numberOfTerritories: parseInt(document.getElementById(`numberOfTerritories${i}`).value)
         });
     }
 
     // Check if all inputs are valid
     if (!attacks.every(attack => 
-        attack.territories.every(num => !isNaN(num)) && !isNaN(attack.attackers)
+        !isNaN(attack.attackers) && !isNaN(attack.totalDefenders) && !isNaN(attack.numberOfTerritories)
     )) {
         document.getElementById('result').innerText = 'Please enter valid numbers for all inputs.';
         return;
@@ -87,7 +88,9 @@ function calculateSimultaneousAttacks() {
         let anySuccess = false;
 
         for (let j = 0; j < numberOfAttacks; j++) {
-            let result = calculateRiskChainWinPercentage(attacks[j].attackers, attacks[j].territories);
+            let defendersPerTerritory = Math.ceil(attacks[j].totalDefenders / attacks[j].numberOfTerritories);
+            let territories = Array(attacks[j].numberOfTerritories).fill(defendersPerTerritory);
+            let result = calculateRiskChainWinPercentage(attacks[j].attackers, territories);
             if (result.success) {
                 successOutcomes[j].success++;
                 successOutcomes[j].remaining[result.remaining] = (successOutcomes[j].remaining[result.remaining] || 0) + 1;
