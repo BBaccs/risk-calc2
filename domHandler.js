@@ -1,4 +1,4 @@
-let simpleMode = false;
+let simpleMode = true;
 
 function toggleCalculatorMode() {
     simpleMode = !simpleMode;
